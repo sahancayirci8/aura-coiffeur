@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aura Coiffeur</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <h1>Aura Coiffeur 💖</h1>
+  <p>Online Appointment System</p>
+</header>
+
+<div class="box">
+  <h2>Book Appointment</h2>
+
+  <input id="name" placeholder="Full Name">
+  <input id="phone" placeholder="Phone Number">
+
+  <select id="service">
+    <option>Haircut</option>
+    <option>Hair Dye</option>
+    <option>Blow Dry</option>
+    <option>Care</option>
+  </select>
+
+  <input type="date" id="date">
+  <input type="time" id="time">
+
+  <button onclick="save()">Create Appointment</button>
+</div>
+
+<div class="box">
+  <h2>Admin Login</h2>
+  <input type="password" id="pass" placeholder="Password">
+  <button onclick="login()">Login</button>
+
+  <ul id="list"></ul>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
