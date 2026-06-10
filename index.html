@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aura Coiffeur</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="bg"></div>
+
+<header>
+  <div class="logo">
+    <svg viewBox="0 0 200 200">
+      <path d="M100 20 C130 20, 160 50, 160 80 C160 120, 120 140, 100 180 C80 140, 40 120, 40 80 C40 50, 70 20, 100 20 Z"/>
+    </svg>
+    <h1>AURA COIFFEUR</h1>
+  </div>
+  <p>Luxury Hair Appointment System</p>
+</header>
+
+<div class="container">
+
+  <div class="card">
+    <h2>Randevu Al</h2>
+
+    <input id="name" placeholder="Ad Soyad">
+    <input id="phone" placeholder="Telefon">
+
+    <select id="service">
+      <option>Saç Kesimi</option>
+      <option>Boya</option>
+      <option>Fön</option>
+      <option>Bakım</option>
+    </select>
+
+    <input type="date" id="date">
+    <input type="time" id="time">
+
+    <button onclick="save()">Randevu Oluştur ✨</button>
+  </div>
+
+  <div class="card admin">
+    <h2>Admin Panel</h2>
+    <input type="password" id="pass" placeholder="Şifre">
+    <button onclick="login()">Giriş Yap</button>
+
+    <ul id="list"></ul>
+  </div>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
