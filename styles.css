@@ -1,0 +1,427 @@
+/* GENERAL STYLES & FONTS */
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background-color: #080807;
+    color: #f5f5f5;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* HAFİF HAREKETLİ LÜKS ARKA PLAN EFEKTLERİ */
+.luxury-bg-glow {
+    position: fixed;
+    top: -20%;
+    left: -10%;
+    width: 60vw;
+    height: 60vw;
+    background: radial-gradient(circle, rgba(212, 175, 55, 0.05) 0%, transparent 70%);
+    z-index: -1;
+    animation: floatGlow 15s infinite alternate ease-in-out;
+}
+.luxury-bg-glow-2 {
+    position: fixed;
+    bottom: -10%;
+    right: -10%;
+    width: 50vw;
+    height: 50vw;
+    background: radial-gradient(circle, rgba(170, 124, 17, 0.04) 0%, transparent 70%);
+    z-index: -1;
+    animation: floatGlow 20s infinite alternate-reverse ease-in-out;
+}
+@keyframes floatGlow {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(50px, 40px) scale(1.15); }
+}
+
+.gold-text {
+    color: #d4af37 !important;
+    background: linear-gradient(to right, #f3e0aa, #d4af37, #aa7c11);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* 3D LOGO & HEADINGS */
+.logo-3d {
+    font-family: 'Cinzel', serif;
+    font-size: 52px;
+    font-weight: 700;
+    text-align: center;
+    color: #d4af37;
+    text-shadow: 0 1px 0 #997302, 0 2px 0 #806002, 0 4px 10px rgba(0,0,0,0.5);
+    letter-spacing: 6px;
+    margin-bottom: 0;
+}
+
+.sub-title-3d {
+    font-family: 'Poppins', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    text-align: center;
+    color: #ffffff;
+    letter-spacing: 4px;
+    margin-top: -5px;
+    margin-bottom: 5px;
+}
+
+/* PREMIUM GİRİŞ PANELİ */
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.login-box {
+    background: rgba(18, 17, 15, 0.85);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(212, 175, 55, 0.25);
+    padding: 40px 30px;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+    max-width: 400px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 14px;
+    margin-bottom: 20px;
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid #2d281e;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 14px;
+    box-sizing: border-box;
+    transition: all 0.3s;
+}
+
+.input-group input:focus {
+    border-color: #d4af37;
+    outline: none;
+    box-shadow: 0 0 8px rgba(212, 175, 55, 0.3);
+}
+
+.gold-btn {
+    background: linear-gradient(135deg, #f3e0aa 0%, #d4af37 50%, #aa7c11 100%);
+    color: #000;
+    border: none;
+    padding: 14px 28px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.gold-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+}
+
+/* APP PANEL & SIDEBAR (RESPONSIVE) */
+.app-container {
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 280px;
+    background: #0a0908;
+    border-right: 1px solid #1a1814;
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    z-index: 999;
+    transition: all 0.3s ease;
+}
+
+/* MOBİL MENÜ BUTONLARI */
+.menu-toggle-btn {
+    display: none;
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    background: linear-gradient(135deg, #f3e0aa 0%, #d4af37 100%);
+    color: #000;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 6px;
+    font-size: 20px;
+    cursor: pointer;
+    z-index: 1000;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.menu-close-btn {
+    display: none;
+    background: #e74c3c;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.sidebar-brand h1 {
+    font-family: 'Cinzel', serif;
+    color: #d4af37;
+    margin: 0;
+    letter-spacing: 3px;
+    font-size: 28px;
+}
+
+.sidebar-brand span {
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: #fff;
+}
+
+.welcome-box {
+    background: rgba(212, 175, 55, 0.08);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    padding: 10px;
+    border-radius: 6px;
+    text-align: center;
+    margin: 25px 0;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: #d4af37;
+    font-weight: bold;
+}
+
+.menu-btn {
+    background: transparent;
+    border: none;
+    color: #aaa;
+    padding: 14px 18px;
+    text-align: left;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    transition: all 0.2s;
+}
+
+.menu-btn:hover, .menu-btn.active {
+    background: linear-gradient(to right, rgba(212, 175, 55, 0.12), transparent);
+    border-left: 3px solid #d4af37;
+    color: #d4af37;
+}
+
+.logout-btn:hover {
+    background: #e74c3c !important;
+    color: white !important;
+    border: none;
+}
+
+/* MAIN CONTENT */
+.main-content {
+    flex: 1;
+    padding: 40px;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.page-title {
+    font-family: 'Cinzel', serif;
+    font-size: 26px;
+    border-bottom: 1px solid #1a1814;
+    padding-bottom: 15px;
+    margin-bottom: 30px;
+    letter-spacing: 1px;
+}
+
+.stats-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.stat-box {
+    background: rgba(20, 19, 17, 0.6);
+    border: 1px solid #1a1814;
+    padding: 22px 20px;
+    border-radius: 12px;
+    backdrop-filter: blur(5px);
+}
+
+.stat-box span {
+    font-size: 11px;
+    color: #aa7c11;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.stat-box h2 {
+    margin: 8px 0 0 0;
+    font-size: 26px;
+}
+
+.premium-card {
+    background: rgba(14, 13, 11, 0.8);
+    border: 1px solid #1a1814;
+    padding: 25px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    margin-bottom: 20px;
+}
+
+/* LUXURY TABLES */
+.luxury-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.luxury-table th {
+    background: #080807;
+    color: #d4af37;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 1px;
+    padding: 14px;
+    text-align: left;
+    border-bottom: 2px solid #1a1814;
+}
+
+.luxury-table td {
+    padding: 14px;
+    border-bottom: 1px solid #141311;
+    font-size: 13px;
+    color: #e0e0e0;
+}
+
+/* FORM GROUPS */
+.form-group { margin-bottom: 18px; }
+.form-group label { display: block; font-size: 11px; color: #aaa; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+.form-group input, .form-group select { width: 100%; padding: 12px; background: #000; border: 1px solid #1a1814; border-radius: 6px; color: #fff; box-sizing: border-box; }
+.form-group input:focus, .form-group select:focus { border-color: #d4af37; outline: none; }
+
+/* ADİSYON / GÜZELLEŞTİRİLMİŞ ÖZEL FATURA ALANI */
+.appointment-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+}
+
+.receipt-wrapper-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.receipt-container {
+    width: 310px;
+    background: #ffffff;
+    color: #000000;
+    padding: 35px 25px;
+    border-radius: 2px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+    font-family: 'Courier New', Courier, monospace;
+    box-sizing: border-box;
+    border-left: 4px solid #d4af37; /* Lüks altın şerit çizgisi */
+}
+
+.receipt-premium-tag {
+    font-family: 'Cinzel', serif;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    margin: 5px 0 0 0;
+    color: #000;
+}
+
+.gold-line-mini {
+    width: 40px;
+    height: 2px;
+    background: #d4af37;
+    margin: 8px auto 0 auto;
+}
+
+.receipt-header h3 {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    letter-spacing: 1px;
+    font-size: 15px;
+}
+
+.receipt-divider {
+    border-top: 1px dashed #000000;
+    margin: 15px 0;
+}
+
+.receipt-footer {
+    text-align: center;
+    margin-top: 40px;
+    font-size: 11px;
+    font-weight: bold;
+    border-top: 1px solid #000;
+    padding-top: 10px;
+    letter-spacing: 1px;
+}
+
+/* ADİSYONU TELEFONA İNDİRME BUTONU */
+.download-receipt-btn {
+    width: 100%;
+    background: #1c1a15;
+    color: #d4af37;
+    border: 1px solid #d4af37;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.download-receipt-btn:hover {
+    background: #d4af37;
+    color: #000;
+}
+
+/* TELEFON VE TABLET UYUMU (RESPONSIVE TASARIM) */
+@media (max-width: 768px) {
+    .menu-toggle-btn { display: block; }
+    .menu-close-btn { display: block; }
+    
+    .sidebar {
+        position: fixed;
+        left: -320px; /* Kapalıyken ekrandan gizle */
+        top: 0;
+        bottom: 0;
+        box-shadow: 10px 0 30px rgba(0,0,0,0.8);
+    }
+    
+    .sidebar.mobile-open {
+        left: 0; /* Açıldığında ekrana getir */
+    }
+    
+    .main-content {
+        padding: 80px 20px 20px 20px; /* Üstten hamburger menü payı */
+    }
+    
+    .appointment-wrapper {
+        flex-direction: column;
+    }
+    
+    .receipt-wrapper-area {
+        width: 100%;
+    }
+    
+    .receipt-container {
+        width: 100%;
+        max-width: 340px;
+    }
+}
