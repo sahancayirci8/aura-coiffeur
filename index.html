@@ -627,7 +627,7 @@
                                     <th>Zamanlama</th>
                                     <th>Premium İşlem</th>
                                     <th>Hizmet Bedeli</th>
-                                    <th>İşlem</th>
+                                    <th>Yönetim Alanı</th>
                                 </tr>
                             </thead>
                             <tbody id="today-appointments-list"></tbody>
@@ -737,7 +737,7 @@
                                     <th>Randevu Zamanı</th>
                                     <th>Hizmet</th>
                                     <th>Bedel</th>
-                                    <th>İşlem</th>
+                                    <th>Yönetim Alanı</th>
                                 </tr>
                             </thead>
                             <tbody id="all-calendar-list"></tbody>
@@ -938,11 +938,9 @@
             if (confirm("Bu VIP adisyon kaydını silip Çöp Kutusu'na taşımak istediğinize emin misiniz?")) {
                 const targetIndex = appointments.findIndex(app => app.id === id);
                 if (targetIndex !== -1) {
-                    // Çöp kutusuna ekle
                     trashBin.push(appointments[targetIndex]);
                     localStorage.setItem('aura_trash', JSON.stringify(trashBin));
                     
-                    // Ana listeden sil
                     appointments.splice(targetIndex, 1);
                     localStorage.setItem('aura_appointments', JSON.stringify(appointments));
                     
@@ -966,13 +964,45 @@
             }
         }
 
-        // ÇÖPTEN KALICI OLARAK SİLME (SADECE SENİN YAPABİLECEĞİN KISIM)
+        // ÇÖPTEN KALICI OLARAK SİLME
         function hardDeleteAppointment(id) {
             if (confirm("DİKKAT! Bu kayıt kalıcı olarak silinecektir ve geri getirilemez. Onaylıyor musunuz?")) {
                 trashBin = trashBin.filter(app => app.id !== id);
                 localStorage.setItem('aura_trash', JSON.stringify(trashBin));
                 updateAllTables();
             }
+        }
+
+        // 🟢 ÜCRETSİZ VIP WHATSAPP HATIRLATMA MOTORU
+        function sendWhatsAppReminder(id) {
+            const app = appointments.find(item => item.id === id);
+            if (!app) return;
+
+            // Tarih formatlama
+            const rawDate = new Date(app.date);
+            const day = String(rawDate.getDate()).padStart(2, '0');
+            const month = String(rawDate.getMonth() + 1).padStart(2, '0');
+            const year = rawDate.getFullYear();
+            const hours = String(rawDate.getHours()).padStart(2, '0');
+            const minutes = String(rawDate.getMinutes()).padStart(2, '0');
+            const cleanDate = `${day}.${month}.${year} ${hours}:${minutes}`;
+
+            // Lüks Metin Şablonu
+            const message = `Sayın *${app.name}*, Aura Coiffeur'den rezerve ettiğiniz *${cleanDate}* tarihli *${app.service}* işleminiz için premium randevunuz onaylanmıştır. Hizmet Bedeli: *₺${app.price.toLocaleString('tr-TR')}*. Keyifli günler dileriz. ✨`;
+            
+            // Telefon Numarası Temizleme (Başındaki 0'ı kaldırma veya ülke kodu ekleme)
+            let formattedPhone = app.phone.replace(/\s+/g, '').replace(/[^0-9]/g, '');
+            if (formattedPhone.startsWith('0')) {
+                formattedPhone = '90' + formattedPhone.substring(1);
+            } else if (!formattedPhone.startsWith('90') && formattedPhone.length === 10) {
+                formattedPhone = '90' + formattedPhone;
+            }
+
+            // WhatsApp Web/App API URL oluşturma
+            const whatsappUrl = `https://api.whatsapp.com/send?phone=${formattedPhone}&text=${encodeURIComponent(message)}`;
+            
+            // Yeni sekmede tetikleme
+            window.open(whatsappUrl, '_blank');
         }
 
         // TABLOLARI GÜNCELLEME SİSTEMİ
@@ -1013,7 +1043,10 @@
                         <td>${formattedDate}</td>
                         <td class="gold-text">${app.service}</td>
                         <td><b>₺${displayPrice}</b></td>
-                        <td><button onclick="deleteAppointment(${app.id})" style="background:#c0392b; color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:11px;"><i class="fas fa-trash"></i> Sil</button></td>
+                        <td>
+                            <button onclick="sendWhatsAppReminder(${app.id})" style="background:#2ecc71; color:black; font-weight:600; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:11px; margin-right:4px;"><i class="fab fa-whatsapp"></i> WhatsApp</button>
+                            <button onclick="deleteAppointment(${app.id})" style="background:#c0392b; color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:11px;"><i class="fas fa-trash"></i> İptal</button>
+                        </td>
                     </tr>`;
                     
                     todayList.innerHTML += rowTemplate;
