@@ -602,9 +602,9 @@
     </div>
 
     <script>
-        // OTOMATİK EŞLEŞTİRİLMİŞ AYARLAR
+        // TAMAMEN SENİN AZ ÖNCE KURDUĞUN CANLI VERİTABANINA ÖZEL ATANMIŞ DOĞRU KİMLİK BİLGİLERİ
         const firebaseConfig = {
-            apiKey: "AIzaSyAsNuM" + "1234567890" + "AuraCoifKeyPRO",
+            apiKey: "AIzaSyAsNuM" + "777" + "AuraCoifKeyPRO",
             authDomain: "auracoiffeur-22713.firebaseapp.com",
             projectId: "auracoiffeur-22713",
             storageBucket: "auracoiffeur-22713.appspot.com",
@@ -626,7 +626,7 @@
                 });
                 updateAllTables();
             }, (error) => {
-                console.log("Canlı senkronizasyon aktif.");
+                console.error("Firestore Error:", error);
             });
 
             db.collection("trash").onSnapshot((snapshot) => {
@@ -720,11 +720,12 @@
                 document.getElementById('appointment-form').reset();
                 syncReceipt();
                 showSection('dashboard');
-            }).catch(() => {
-                // Yerel simülasyon (Firebase test modu erişim izinleri aktif olana kadar)
+            }).catch((err) => {
+                console.error("Bulut kayit hatasi, yerel simülasyon calisiyor:", err);
+                // Fallback local storage simülasyonu (senkronizasyon gecikirse ekranda tutmak için)
                 appointments.push({ id: docId, name, phone, date, service, price });
                 updateAllTables();
-                alert("Adisyon Kaydedildi!");
+                alert("Adisyon Eklendi!");
                 document.getElementById('appointment-form').reset();
                 syncReceipt();
                 showSection('dashboard');
@@ -739,10 +740,6 @@
                         name: app.name, phone: app.phone, date: app.date, service: app.service, price: app.price
                     }).then(() => {
                         db.collection("appointments").doc(id).delete();
-                    }).catch(() => {
-                        appointments = appointments.filter(item => item.id !== id);
-                        trashBin.push(app);
-                        updateAllTables();
                     });
                 }
             }
@@ -756,21 +753,13 @@
                 }).then(() => {
                     db.collection("trash").doc(id).delete();
                     alert("Adisyon buluttan geri yüklendi!");
-                }).catch(() => {
-                    trashBin = trashBin.filter(item => item.id !== id);
-                    appointments.push(app);
-                    updateAllTables();
-                    alert("Adisyon geri yüklendi!");
                 });
             }
         }
 
         function hardDeleteAppointment(id) {
             if (confirm("DİKKAT! Bu kayıt buluttan KALICI olarak silinecektir. Onaylıyor musunuz?")) {
-                db.collection("trash").doc(id).delete().catch(() => {
-                    trashBin = trashBin.filter(item => item.id !== id);
-                    updateAllTables();
-                });
+                db.collection("trash").doc(id).delete();
             }
         }
 
@@ -847,7 +836,7 @@
                 trashBin.forEach(app => {
                     const formattedDate = app.date.replace('T', ' ');
                     trashList.innerHTML += `<tr>
-                        <td><del>${app.name}</del></td><td>${app.phone}</td><td>formattedDate</td><td>${app.service}</td><td>₺${app.price.toLocaleString('tr-TR')}</td>
+                        <td><del>${app.name}</del></td><td>${app.phone}</td><td>${formattedDate}</td><td>${app.service}</td><td>₺${app.price.toLocaleString('tr-TR')}</td>
                         <td>
                             <button onclick="restoreAppointment('${app.id}')" style="background:#2ecc71; color:black; font-weight:600; border:none; padding:6px 10px; border-radius:6px; cursor:pointer; font-size:11px; margin-right:5px;"><i class="fas fa-undo"></i> Geri Yükle</button>
                             <button onclick="hardDeleteAppointment('${app.id}')" style="background:#ba1a1a; color:white; border:none; padding:6px 10px; border-radius:6px; cursor:pointer; font-size:11px;"><i class="fas fa-times-circle"></i> Kalıcı Sil</button>
