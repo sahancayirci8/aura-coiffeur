@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aura Coiffeur Pro | Ultra Premium Panel</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- Faturayı telefona resim olarak indirmeyi sağlayan sihirli kütüphane -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        .content-section { display: none; }
+        .content-section.active { display: block; animation: fadeIn 0.4s ease; }
+        .app-container { display: none; }
+        .app-container.logged-in { display: flex; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <!-- ARKA PLANDAKİ HAREKETLİ LÜKS IŞIK EFEKTLERİ -->
+    <div class="luxury-bg-glow"></div>
+    <div class="luxury-bg-glow-2"></div>
+
+    <!-- MOBİL İÇİN MENÜ AÇMA BUTONU (HAMBURGER) -->
+    <button id="menu-toggle-btn" class="menu-toggle-btn" onclick="toggleSidebar(true)">☰</button>
+
+    <!-- 1. PREMIUM GİRİŞ EKRANI -->
+    <div id="login-container" class="login-container">
+        <div class="login-box">
+            <div class="logo-3d">AURA</div>
+            <h1 class="sub-title-3d">COIFFEUR PREMIUM</h1>
+            <p style="color: #c5a880; letter-spacing: 2px; font-size: 11px;">LUXURY EXPERT SYSTEM</p>
+            <form id="login-form" onsubmit="handleLogin(event)">
+                <div class="input-group">
+                    <input type="text" id="username" placeholder="Kullanıcı Adı" required>
+                </div>
+                <div class="input-group">
+                    <input type="password" id="password" placeholder="Şifre" required>
+                </div>
+                <button type="submit" class="gold-btn">Giriş Yap</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 2. ANA PREMIUM PANEL -->
+    <div id="app-container" class="app-container">
+        
+        <!-- LUXURY SIDEBAR (MENÜ) -->
+        <div id="sidebar" class="sidebar">
+            <!-- Mobil İçin Menü Kapatma Butonu -->
+            <button class="menu-close-btn" onclick="toggleSidebar(false)">✕ Kapat</button>
+            
+            <div class="sidebar-brand">
+                <h1>AURA</h1>
+                <span>PREMIUM</span>
+            </div>
+            <div class="welcome-box">VIP MASTER PANEL</div>
+            
+            <button class="menu-btn" onclick="showSection('dashboard')">🏠 Yönetim Paneli</button>
+            <button class="menu-btn" onclick="showSection('appointment')">➕ Yeni Randevu & Adisyon</button>
+            <button class="menu-btn" onclick="showSection('calendar')">📅 Premium Takvim</button>
+            <button class="menu-btn" onclick="showSection('customers')">👥 VIP Müşteriler</button>
+            <button class="menu-btn" onclick="showSection('cashbox')">💰 Kasa & Ciro</button>
+            
+            <button class="menu-btn logout-btn" onclick="handleLogout()">🚪 Güvenli Çıkış</button>
+        </div>
+
+        <!-- ANA İÇERİK ALANI -->
+        <div class="main-content">
+
+            <!-- DASHBOARD -->
+            <div id="dashboard" class="content-section active">
+                <h1 class="page-title">Yönetim Paneli</h1>
+                <div class="stats-container">
+                    <div class="stat-box"><span>Bugünkü Rezervasyon</span><h2 id="stat-count">0</h2></div>
+                    <div class="stat-box"><span>Bekleyen VIP</span><h2>0</h2></div>
+                    <div class="stat-box"><span>Tamamlanan</span><h2>0</h2></div>
+                    <div class="stat-box"><span>Günlük Kasa</span><h2 id="stat-cash" class="gold-text">₺0</h2></div>
+                </div>
+                
+                <div class="premium-card">
+                    <h2>Bugünün Ajandası</h2>
+                    <div style="overflow-x: auto;">
+                        <table class="luxury-table">
+                            <thead>
+                                <tr>
+                                    <th>VIP Müşteri</th>
+                                    <th>İletişim</th>
+                                    <th>Zamanlama</th>
+                                    <th>Premium İşlem</th>
+                                    <th>Hizmet Bedeli</th>
+                                </tr>
+                            </thead>
+                            <tbody id="today-appointments-list"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- YENİ RANDEVU VE ADİSYON -->
+            <div id="appointment" class="content-section">
+                <h1 class="page-title">Randevu & Adisyon Oluştur</h1>
+                
+                <div class="appointment-wrapper">
+                    <!-- Form Bölümü -->
+                    <div class="premium-card" style="flex: 1; min-width: 280px;">
+                        <form id="appointment-form" onsubmit="generateReceipt(event)">
+                            <div class="form-group">
+                                <label>Müşteri Adı Soyadı</label>
+                                <input type="text" id="app-name" placeholder="Eda Yılmaz" required oninput="syncReceipt()">
+                            </div>
+                            <div class="form-group">
+                                <label>Telefon</label>
+                                <input type="tel" id="app-phone" placeholder="05XX XXX XX XX" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Tarih & Saat</label>
+                                <input type="datetime-local" id="app-date" required oninput="syncReceipt()">
+                            </div>
+                            <div class="form-group">
+                                <label>Uygulanacak Premium İşlem</label>
+                                <select id="app-service" onchange="syncReceipt()">
+                                    <option value="Ombre">Ombre</option>
+                                    <option value="Sombre">Sombre</option>
+                                    <option value="Saç Kesimi">Saç Kesimi</option>
+                                    <option value="Cila">Cila</option>
+                                    <option value="Keratin">Keratin</option>
+                                    <option value="Botox">Botox</option>
+                                    <option value="Brezilya Fönü">Brezilya Fönü</option>
+                                    <option value="Maşa">Maşa</option>
+                                    <option value="Topuz">Topuz</option>
+                                    <option value="Dip Boya">Dip Boya</option>
+                                    <option value="Dip Açma">Dip Açma</option>
+                                    <option value="Komple Açma Boyama">Komple Açma Boyama</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Hizmet Bedeli (₺)</label>
+                                <input type="number" id="app-price" placeholder="1500" required oninput="syncReceipt()">
+                            </div>
+                            <button type="submit" class="gold-btn" style="width: 100%;">Adisyonu Onayla ve Kaydet</button>
+                        </form>
+                    </div>
+
+                    <!-- 3D ADİSYON (FATURA) VE İNDİRME ALANI -->
+                    <div class="receipt-wrapper-area">
+                        <div class="receipt-container" id="receipt-view">
+                            <div class="receipt-header">
+                                <h3>AURA COIFFEUR</h3>
+                                <div class="gold-line-mini"></div>
+                                <p class="receipt-premium-tag">PREMIUM</p>
+                                <div class="receipt-divider"></div>
+                            </div>
+                            <div class="receipt-body">
+                                <p><strong>Tarih:</strong> <span id="rec-date">--.--.---- --:--</span></p>
+                                <p><strong>Müşteri:</strong> <span id="rec-name">Müşteri Seçilmedi</span></p>
+                                <div class="receipt-divider"></div>
+                                <table style="width: 100%; color: #000; font-size: 14px; border-collapse: collapse;">
+                                    <thead>
+                                        <tr style="border-bottom: 1px solid #000;">
+                                            <th style="text-align: left; padding-bottom: 5px;">Hizmet</th>
+                                            <th style="text-align: right; padding-bottom: 5px;">Tutar</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td id="rec-service" style="padding-top: 8px;">Belirtilmedi</td>
+                                            <td id="rec-price" style="text-align: right; padding-top: 8px; font-weight: bold;">₺0</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <div class="receipt-divider" style="margin-top: 40px;"></div>
+                                <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 15px; letter-spacing: 1px;">
+                                    <span>TOPLAM:</span>
+                                    <span id="rec-total">₺0</span>
+                                </div>
+                            </div>
+                            <div class="receipt-footer">
+                                <p>Luxury Salon Experience</p>
+                            </div>
+                        </div>
+                        <!-- Telefona indirme butonu -->
+                        <button class="download-receipt-btn" onclick="downloadReceiptPNG()">📥 Adisyonu Telefona İndir</button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- TAKVİM -->
+            <div id="calendar" class="content-section">
+                <h1 class="page-title">Premium Rezervasyon Takvimi</h1>
+                <div class="premium-card">
+                    <div style="overflow-x: auto;">
+                        <table class="luxury-table">
+                            <thead>
+                                <tr>
+                                    <th>VIP Müşteri</th>
+                                    <th>Randevu Zamanı</th>
+                                    <th>Hizmet</th>
+                                    <th>Bedel</th>
+                                </tr>
+                            </thead>
+                            <tbody id="all-calendar-list"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MÜŞTERİLER -->
+            <div id="customers" class="content-section">
+                <h1 class="page-title">VIP Müşteri Portföyü</h1>
+                <div class="premium-card">
+                    <div style="overflow-x: auto;">
+                        <table class="luxury-table">
+                            <thead>
+                                <tr>
+                                    <th>Müşteri Adı</th>
+                                    <th>Telefon</th>
+                                    <th>Son Hizmet Tarihi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="customer-list"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KASA -->
+            <div id="cashbox" class="content-section">
+                <h1 class="page-title">Kasa Finans Raporu</h1>
+                <div class="premium-card" style="background: linear-gradient(135deg, #1e1b15 0%, #0d0c0a 100%); border: 1px solid #d4af37; text-align: center; padding: 40px 20px;">
+                    <span style="letter-spacing: 2px; color: #aaa; font-size: 12px;">TOPLAM KAZANÇ (BRÜT CIRO)</span>
+                    <h1 id="total-cash-display" style="font-size: 42px; margin: 10px 0;" class="gold-text">₺0</h1>
+                </div>
+                <div class="premium-card" style="margin-top: 20px;">
+                    <h2>Gelir Hareketleri</h2>
+                    <div style="overflow-x: auto;">
+                        <table class="luxury-table">
+                            <thead>
+                                <tr>
+                                    <th>Kaynak Açıklaması</th>
+                                    <th>Alınan Hizmet</th>
+                                    <th>Kasa Girişi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cash-list"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
