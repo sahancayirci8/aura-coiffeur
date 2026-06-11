@@ -602,14 +602,15 @@
     </div>
 
     <script>
-        // TAMAMEN SENİN AZ ÖNCE KURDUĞUN CANLI VERİTABANINA ÖZEL ATANMIŞ DOĞRU KİMLİK BİLGİLERİ
+        // GÖRSELDEKİ BİLGİLERİN %100 BİREBİR KOPYALANMIŞ HALİ
         const firebaseConfig = {
-            apiKey: "AIzaSyAsNuM" + "777" + "AuraCoifKeyPRO",
-            authDomain: "auracoiffeur-22713.firebaseapp.com",
-            projectId: "auracoiffeur-22713",
-            storageBucket: "auracoiffeur-22713.appspot.com",
+            apiKey: "AIzaSyCLxArUDt5KL7Yi6JgLBjRy14do",
+            authDomain: "aura-coiffeur.firebaseapp.com",
+            projectId: "aura-coiffeur",
+            storageBucket: "aura-coiffeur.firebasestorage.app",
             messagingSenderId: "227131085890",
-            appId: "1:227131085890:web:aura777coiffeur"
+            appId: "1:227131085890:web:902ae7ee362503a6",
+            measurementId: "G-WQ01SFRT0W"
         };
 
         firebase.initializeApp(firebaseConfig);
@@ -721,14 +722,8 @@
                 syncReceipt();
                 showSection('dashboard');
             }).catch((err) => {
-                console.error("Bulut kayit hatasi, yerel simülasyon calisiyor:", err);
-                // Fallback local storage simülasyonu (senkronizasyon gecikirse ekranda tutmak için)
-                appointments.push({ id: docId, name, phone, date, service, price });
-                updateAllTables();
-                alert("Adisyon Eklendi!");
-                document.getElementById('appointment-form').reset();
-                syncReceipt();
-                showSection('dashboard');
+                console.error("Bulut hatasi:", err);
+                alert("Bağlantı hatası oluştu, kuralları kontrol edin.");
             });
         }
 
