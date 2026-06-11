@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AURA COIFFEUR - Premium Panel</title>
+    <!-- Google Fonts ve FontAwesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- html2canvas (Adisyon İndirme İçin) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- CSS Bağlantısı (Tam Dosya Adı) -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- GİRİŞ EKRANI -->
+    <div id="login-screen" class="login-container">
+        <div class="login-box">
+            <h1 class="brand-title">AURA</h1>
+            <h2 class="brand-subtitle">COIFFEUR PREMIUM</h2>
+            <p class="expert-system-text">LUXURY EXPERT SYSTEM</p>
+            <form id="login-form">
+                <div class="input-group">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="username" placeholder="Kullanıcı Adı" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="password" placeholder="Şifre" required>
+                </div>
+                <button type="submit" class="btn-login">GİRİŞ YAP</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ANA PANEL (Girişten Sonra Açılacak) -->
+    <div id="main-panel" class="main-wrapper" style="display: none;">
+        <!-- Buraya panel içeriklerin gelecek -->
+        <p style="color: #fff; text-align: center; padding: 20px;">Başarıyla Giriş Yapıldı. Premium Panel Yükleniyor...</p>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
