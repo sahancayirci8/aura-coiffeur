@@ -231,18 +231,22 @@
             list-style: none;
             padding: 0;
             margin: 0;
-            max-height: 250px;
+            max-height: 350px;
             overflow-y: auto;
+            text-align: left;
         }
+        /* 🌟 YAZI RENGİ VE GÖRÜNÜRLÜK AYARI BURADA DÜZELTİLDİ */
         #userList li {
-            padding: 12px 15px;
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: 12px;
-            margin-bottom: 8px;
-            font-size: 14px;
-            color: #d1d1d0;
-            border: 1px solid rgba(255, 255, 255, 0.02);
+            padding: 14px 20px;
+            background: rgba(255, 255, 255, 0.07); /* Kapsül içi hafif gri-beyaz yapıldı */
+            border-radius: 14px;
+            margin-bottom: 10px;
+            font-size: 15px;
+            color: #ffffff !important; /* Yazı rengi kesin olarak BEYAZ yapıldı */
+            font-weight: 500;
+            border: 1px solid rgba(243, 204, 74, 0.2); /* Hafif gold detay çizgisi */
             word-break: break-all;
+            display: block;
         }
         #userList li:last-child {
             margin-bottom: 0;
@@ -325,7 +329,6 @@
         <p>© 2026 Insta Insight</p>
     </footer>
 
-    <!-- Küçük etkileşimler ve dosya ismi gösterme mantığı -->
     <script>
         document.getElementById('zipInput').addEventListener('change', function(e) {
             const fileName = e.target.files[0] ? e.target.files[0].name : "Dosya seçilmedi...";
