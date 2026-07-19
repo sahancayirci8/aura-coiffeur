@@ -26,29 +26,20 @@
         .upload-card {
             background: linear-gradient(145deg, #181816 0%, #111110 100%);
             border: 1px solid rgba(243, 204, 74, 0.2); border-radius: 25px;
-            width: 100%; max-width: 420px; padding: 25px 20px; text-align: center;
+            width: 100%; max-width: 420px; padding: 35px 25px; text-align: center;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6); margin-bottom: 25px;
         }
-        .upload-card h2 { font-size: 22px; margin: 0 0 5px 0; }
-        .upload-card p { color: #a0a09e; font-size: 12px; margin: 0 0 15px 0; }
+        .upload-card h2 { font-size: 24px; margin: 0 0 10px 0; }
+        .upload-card p { color: #a0a09e; font-size: 13px; margin: 0 0 25px 0; }
         
-        .input-box {
-            text-align: left; margin-bottom: 15px;
-        }
-        .input-box label {
-            font-size: 13px; color: #f3cc4a; font-weight: 600; display: block; margin-bottom: 5px;
-        }
-        .input-box textarea {
-            width: 100%; height: 80px; background-color: #141413; border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px; color: #ffffff; padding: 10px; font-size: 12px; outline: none; resize: none;
-        }
-        
-        #analyzeBtn {
+        .main-btn-label {
             background: linear-gradient(90deg, #f3cc4a 0%, #d4a727 100%); color: #0d0d0c;
-            border: none; width: 100%; padding: 14px; border-radius: 15px;
-            font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 5px;
-            box-shadow: 0 5px 15px rgba(243, 204, 74, 0.3);
+            border: none; width: 100%; padding: 16px; border-radius: 15px;
+            font-size: 16px; font-weight: 700; cursor: pointer; display: block;
+            box-shadow: 0 5px 15px rgba(243, 204, 74, 0.3); text-align: center;
         }
+        
+        #statusMessage { font-size: 13px; color: #a0a09e; margin-top: 15px; display: block; }
         
         .dashboard { width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 15px; margin-bottom: 25px; }
         .card {
@@ -90,24 +81,18 @@
     <div class="background"></div>
     <header>
         <h1>Insta Insight</h1>
-        <p>Canlı Otomatik Veri Analizi</p>
+        <p>Tek Tuşla Canlı Analiz</p>
     </header>
 
     <section class="upload-card">
-        <h2>Verileri Yapıştır</h2>
-        <p>JSON dosyalarının içindeki yazıları kopyalayıp kutulara yapıştırın.</p>
+        <h2>Instagram Klasörünü Seç</h2>
+        <p>Aşağıdaki butona basıp Instagram'dan indirdiğin klasörü seçmen yeterli.</p>
         
-        <div class="input-box">
-            <label for="followersText">1. followers.json İçeriği:</label>
-            <textarea id="followersText" placeholder="followers.json dosyasının içindeki tüm yazıyı buraya yapıştırın..."></textarea>
-        </div>
-
-        <div class="input-box">
-            <label for="followingText">2. following.json İçeriği:</label>
-            <textarea id="followingText" placeholder="following.json dosyasının içindeki tüm yazıyı buraya yapıştırın..."></textarea>
-        </div>
-
-        <button id="analyzeBtn">Otomatik Analiz Et</button>
+        <!-- Tek bir butonla tüm klasörü tarama yeteneği (webkitdirectory) -->
+        <label for="folderInput" class="main-btn-label">Klasör Seç ve Analiz Et</label>
+        <input type="file" id="folderInput" webkitdirectory directory multiple style="display:none;">
+        
+        <span id="statusMessage">Henüz klasör seçilmedi.</span>
     </section>
 
     <section class="dashboard">
@@ -135,7 +120,7 @@
             <button id="downloadCsv">CSV İndir</button>
         </div>
         <ul id="userList">
-            <li>Lütfen verileri kutulara yapıştırıp analizi başlatın.</li>
+            <li>Lütfen klasörü seçip analizi başlatın.</li>
         </ul>
     </section>
 
@@ -144,12 +129,31 @@
     <script>
         let globalUnfollowers = [];
 
-        document.getElementById('analyzeBtn').addEventListener('click', function() {
-            const followersRaw = document.getElementById('followersText').value.trim();
-            const followingRaw = document.getElementById('followingText').value.trim();
+        document.getElementById('folderInput').addEventListener('change', async function(e) {
+            const files = e.target.files;
+            if (files.length === 0) return;
 
-            if (!followersRaw || !followingRaw) {
-                alert("Lütfen iki kutuyu da doldurun!");
+            document.getElementById('statusMessage').innerText = "Klasör taranıyor, lütfen bekleyin...";
+            document.getElementById('statusMessage').style.color = '#f3cc4a';
+
+            let followersFile = null;
+            let followingFile = null;
+
+            // Klasör içindeki yüzlerce dosya arasından doğru olanları anında bulur
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                if (file.name.toLowerCase() === 'followers.json') {
+                    followersFile = file;
+                }
+                if (file.name.toLowerCase() === 'following.json') {
+                    followingFile = file;
+                }
+            }
+
+            if (!followersFile || !followingFile) {
+                alert("Seçtiğiniz klasörün içinde 'followers.json' veya 'following.json' bulunamadı. Lütfen Instagram verilerini içeren ana klasörü seçtiğinizden emin olun.");
+                document.getElementById('statusMessage').innerText = "Hata: Gerekli dosyalar bulunamadı.";
+                document.getElementById('statusMessage').style.color = '#ff4a4a';
                 return;
             }
 
@@ -157,35 +161,39 @@
                 let followersList = [];
                 let followingList = [];
 
-                // 1. Takipçileri Çöz
-                const followersData = JSON.parse(followersRaw);
+                // 1. Takipçileri Oku
+                const followersText = await followersFile.text();
+                const followersData = JSON.parse(followersText);
                 const rawFollowers = Array.isArray(followersData) ? followersData : (followersData.entries || []);
                 followersList = rawFollowers.map(item => {
                     if (item.string_list_data && item.string_list_data[0]) return item.string_list_data[0].value;
                     return typeof item === 'string' ? item : null;
                 }).filter(Boolean);
 
-                // 2. Takip Edilenleri Çöz
-                const followingData = JSON.parse(followingRaw);
+                // 2. Takip Edilenleri Oku
+                const followingText = await followingFile.text();
+                const followingData = JSON.parse(followingText);
                 const rawFollowing = followingData.relationships_following || followingData.entries || (Array.isArray(followingData) ? followingData : []);
                 followingList = rawFollowing.map(item => {
                     if (item.string_list_data && item.string_list_data[0]) return item.string_list_data[0].value;
                     return typeof item === 'string' ? item : null;
                 }).filter(Boolean);
 
-                // 3. İstatistikleri Yazdır
+                // 3. Ekrana Sonuçları Bas
                 document.getElementById('followersCount').innerText = followersList.length;
                 document.getElementById('followingCount').innerText = followingList.length;
 
-                // 4. Çapraz Karşılaştırma
                 globalUnfollowers = followingList.filter(user => !followersList.includes(user));
                 document.getElementById('notFollowingCount').innerText = globalUnfollowers.length;
 
                 renderList(globalUnfollowers);
+                document.getElementById('statusMessage').innerText = "Analiz başarıyla tamamlandı! 🎉";
+                document.getElementById('statusMessage').style.color = '#00ff88';
 
             } catch (err) {
-                alert("Yapıştırılan metinlerde hata var. Lütfen dosyanın içindeki tüm yazıyı eksiksiz kopyaladığınızdan emin olun.");
-                console.error(err);
+                alert("Dosyalar okunurken teknik bir hata oluştu.");
+                document.getElementById('statusMessage').innerText = "Okuma hatası.";
+                document.getElementById('statusMessage').style.color = '#ff4a4a';
             }
         });
 
