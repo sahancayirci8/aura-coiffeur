@@ -1,17 +1,264 @@
 <!DOCTYPE html>
 <html lang="tr">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Insta Insight</title>
-    <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- 🌟 ZIP Dosyalarını Tarayıcıda Açabilmek İçin Gerekli Kütüphane eklendi -->
+    <!-- 🌟 ZIP Dosyalarını Tarayıcıda Açabilmek İçin Gerekli Kütüphane -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        body {
+            background-color: #0d0d0c;
+            color: #ffffff;
+            margin: 0;
+            padding: 20px 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at top, rgba(243, 204, 74, 0.15) 0%, rgba(13, 13, 12, 0) 70%);
+            z-index: -1;
+            pointer-events: none;
+        }
+        header {
+            text-align: center;
+            margin-top: 20px;
+            margin-bottom: 30px;
+            width: 100%;
+            max-width: 420px;
+        }
+        header h1 {
+            color: #f3cc4a;
+            font-size: 36px;
+            font-weight: 800;
+            margin: 0;
+            letter-spacing: 0.5px;
+        }
+        header p {
+            color: #a0a09e;
+            font-size: 15px;
+            margin: 5px 0 0 0;
+            font-weight: 400;
+        }
+        .upload-card {
+            background: linear-gradient(145deg, #181816 0%, #111110 100%);
+            border: 1px solid rgba(243, 204, 74, 0.15);
+            border-radius: 25px;
+            width: 100%;
+            max-width: 420px;
+            padding: 30px 25px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            margin-bottom: 25px;
+        }
+        .upload-card h2 {
+            font-size: 26px;
+            font-weight: 700;
+            margin: 0 0 10px 0;
+            color: #ffffff;
+        }
+        .upload-card p {
+            color: #a0a09e;
+            font-size: 13px;
+            margin: 0 0 25px 0;
+            line-height: 1.5;
+        }
+        .file-input-wrapper {
+            border: 1px dashed rgba(243, 204, 74, 0.4);
+            border-radius: 15px;
+            padding: 20px 15px;
+            margin-bottom: 20px;
+            position: relative;
+            background: rgba(243, 204, 74, 0.02);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .file-input-wrapper input[type="file"] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        .btn-select {
+            background-color: #ffffff;
+            color: #000000;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 12px;
+            margin-right: 10px;
+            white-space: nowrap;
+            pointer-events: none;
+        }
+        .file-name-text {
+            font-size: 12px;
+            color: #d1d1d0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 200px;
+            text-align: left;
+        }
+        #analyzeBtn {
+            background: linear-gradient(90deg, #f3cc4a 0%, #d4a727 100%);
+            color: #0d0d0c;
+            border: none;
+            width: 100%;
+            padding: 15px;
+            border-radius: 15px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(243, 204, 74, 0.3);
+            transition: transform 0.2s ease, opacity 0.2s ease;
+        }
+        #analyzeBtn:active {
+            transform: scale(0.98);
+        }
+        .dashboard {
+            width: 100%;
+            max-width: 420px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+        .card {
+            background: linear-gradient(145deg, #181816 0%, #111110 100%);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 25px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+        .card span {
+            font-size: 34px;
+            margin-bottom: 8px;
+            display: inline-block;
+        }
+        .card h3 {
+            font-size: 15px;
+            color: #a0a09e;
+            margin: 0;
+            font-weight: 400;
+        }
+        .card h1 {
+            font-size: 38px;
+            font-weight: 700;
+            color: #f3cc4a;
+            margin: 10px 0 0 0;
+        }
+        .search-box {
+            width: 100%;
+            max-width: 420px;
+            margin-bottom: 20px;
+        }
+        .search-box input {
+            width: 100%;
+            background-color: #141413;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 15px 20px;
+            border-radius: 15px;
+            color: #ffffff;
+            font-size: 14px;
+            outline: none;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
+        }
+        .search-box input::placeholder {
+            color: #5a5a58;
+        }
+        .search-box input:focus {
+            border-color: rgba(243, 204, 74, 0.5);
+        }
+        .result {
+            background: linear-gradient(145deg, #181816 0%, #111110 100%);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 25px;
+            width: 100%;
+            max-width: 420px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+            margin-bottom: 30px;
+        }
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 15px;
+        }
+        .result-header h2 {
+            font-size: 22px;
+            font-weight: 700;
+            margin: 0;
+        }
+        #downloadCsv {
+            background: linear-gradient(90deg, #f3cc4a 0%, #d4a727 100%);
+            color: #0d0d0c;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(243, 204, 74, 0.2);
+        }
+        #userList {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+        #userList li {
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 12px;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #d1d1d0;
+            border: 1px solid rgba(255, 255, 255, 0.02);
+            word-break: break-all;
+        }
+        #userList li:last-child {
+            margin-bottom: 0;
+        }
+        footer {
+            text-align: center;
+            width: 100%;
+            margin-top: auto;
+            padding: 15px 0;
+        }
+        footer p {
+            color: #444442;
+            font-size: 12px;
+            margin: 0;
+        }
+    </style>
 </head>
 
 <body>
@@ -26,39 +273,36 @@
     <section class="upload-card">
         <h2>Veri Dosyası</h2>
         <p>Instagram hesabından dışa aktardığın ZIP dosyasını yükle.</p>
-        <input type="file" id="zipInput" accept=".zip">
-        <button id="<button id="downloadCsv">CSV İndir</button>
-">
-            Analizi Başlat
-        </button>
+        <div class="file-input-wrapper">
+            <input type="file" id="zipInput" accept=".zip">
+            <button class="btn-select">Dosyayı Seç</button>
+            <span class="file-name-text" id="fileNameDisplay">instagram-aurac...9-N6ZMN93g.zip</span>
+        </div>
+        <button id="analyzeBtn">Analizi Başlat</button>
     </section>
 
     <section class="dashboard">
         <div class="card">
             <span>👥</span>
             <h3>Takipçi</h3>
-            <!-- 🌟 JS ile tam eşleşmesi için id güncellendi -->
             <h1 id="followersCount">0</h1>
         </div>
 
         <div class="card">
             <span>➕</span>
             <h3>Takip Edilen</h3>
-            <!-- 🌟 JS ile tam eşleşmesi için id güncellendi -->
             <h1 id="followingCount">0</h1>
         </div>
 
         <div class="card">
             <span>❌</span>
             <h3>Geri Takip Etmeyen</h3>
-            <!-- 🌟 JS ile tam eşleşmesi için id güncellendi -->
             <h1 id="notFollowingCount">0</h1>
         </div>
 
         <div class="card">
             <span>✅</span>
             <h3>Seni Takip Etmeyen</h3>
-            <!-- İsteğe bağlı kullanım için id eklendi -->
             <h1 id="youDontFollowCount">0</h1>
         </div>
     </section>
@@ -70,24 +314,24 @@
     <section class="result">
         <div class="result-header">
             <h2>Analiz Sonuçları</h2>
-            <button id="downloadCsv">
-                CSV İndir
-            </button>
+            <button id="downloadCsv">CSV İndir</button>
         </div>
         <ul id="userList">
-            <li>
-                Henüz analiz yapılmadı.
-            </li>
+            <li>Henüz analiz yapılmadı.</li>
         </ul>
     </section>
 
     <footer>
-        <p>
-            © 2026 Insta Insight
-        </p>
+        <p>© 2026 Insta Insight</p>
     </footer>
 
+    <!-- Küçük etkileşimler ve dosya ismi gösterme mantığı -->
+    <script>
+        document.getElementById('zipInput').addEventListener('change', function(e) {
+            const fileName = e.target.files[0] ? e.target.files[0].name : "Dosya seçilmedi...";
+            document.getElementById('fileNameDisplay').textContent = fileName;
+        });
+    </script>
     <script src="script.js"></script>
 </body>
-
 </html>
