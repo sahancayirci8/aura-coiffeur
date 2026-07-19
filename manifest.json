@@ -1,1 +1,23 @@
-{}
+{
+  "name": "Insta Insight",
+  "short_name": "Insight",
+  "description": "Modern veri analiz paneli",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#090909",
+  "theme_color": "#D4AF37",
+  "orientation": "portrait",
+  "lang": "tr",
+  "icons": [
+    {
+      "src": "assets/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
