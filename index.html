@@ -26,27 +26,27 @@
         .upload-card {
             background: linear-gradient(145deg, #181816 0%, #111110 100%);
             border: 1px solid rgba(243, 204, 74, 0.2); border-radius: 25px;
-            width: 100%; max-width: 420px; padding: 30px 25px; text-align: center;
+            width: 100%; max-width: 420px; padding: 25px 20px; text-align: center;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6); margin-bottom: 25px;
         }
-        .upload-card h2 { font-size: 24px; margin: 0 0 10px 0; }
-        .upload-card p { color: #a0a09e; font-size: 13px; margin: 0 0 20px 0; }
+        .upload-card h2 { font-size: 22px; margin: 0 0 5px 0; }
+        .upload-card p { color: #a0a09e; font-size: 12px; margin: 0 0 15px 0; }
         
-        .file-box {
-            border: 1px dashed rgba(243, 204, 74, 0.4); border-radius: 15px;
-            padding: 15px; margin-bottom: 15px; background: rgba(243, 204, 74, 0.02);
-            display: flex; align-items: center; justify-content: space-between;
+        .input-box {
+            text-align: left; margin-bottom: 15px;
         }
-        .file-box label {
-            background: #ffffff; color: #000; padding: 6px 12px; border-radius: 8px;
-            font-size: 12px; font-weight: 600; cursor: pointer;
+        .input-box label {
+            font-size: 13px; color: #f3cc4a; font-weight: 600; display: block; margin-bottom: 5px;
         }
-        .file-box span { font-size: 12px; color: #a0a09e; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .input-box textarea {
+            width: 100%; height: 80px; background-color: #141413; border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px; color: #ffffff; padding: 10px; font-size: 12px; outline: none; resize: none;
+        }
         
         #analyzeBtn {
             background: linear-gradient(90deg, #f3cc4a 0%, #d4a727 100%); color: #0d0d0c;
             border: none; width: 100%; padding: 14px; border-radius: 15px;
-            font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 10px;
+            font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 5px;
             box-shadow: 0 5px 15px rgba(243, 204, 74, 0.3);
         }
         
@@ -94,19 +94,17 @@
     </header>
 
     <section class="upload-card">
-        <h2>Canlı Listeleri Yükle</h2>
-        <p>Açtığınız klasörün içindeki .json uzantılı listeleri buraya yükleyin.</p>
+        <h2>Verileri Yapıştır</h2>
+        <p>JSON dosyalarının içindeki yazıları kopyalayıp kutulara yapıştırın.</p>
         
-        <div class="file-box">
-            <span>Takipçiler: <strong id="followersLabel" style="color:#a0a09e;">Seçilmedi</strong></span>
-            <label for="followersFile">Dosya Seç</label>
-            <input type="file" id="followersFile" accept=".json" style="display:none;">
+        <div class="input-box">
+            <label for="followersText">1. followers.json İçeriği:</label>
+            <textarea id="followersText" placeholder="followers.json dosyasının içindeki tüm yazıyı buraya yapıştırın..."></textarea>
         </div>
 
-        <div class="file-box">
-            <span>Takip Edilenler: <strong id="followingLabel" style="color:#a0a09e;">Seçilmedi</strong></span>
-            <label for="followingFile">Dosya Seç</label>
-            <input type="file" id="followingFile" accept=".json" style="display:none;">
+        <div class="input-box">
+            <label for="followingText">2. following.json İçeriği:</label>
+            <textarea id="followingText" placeholder="following.json dosyasının içindeki tüm yazıyı buraya yapıştırın..."></textarea>
         </div>
 
         <button id="analyzeBtn">Otomatik Analiz Et</button>
@@ -137,84 +135,58 @@
             <button id="downloadCsv">CSV İndir</button>
         </div>
         <ul id="userList">
-            <li>Lütfen listeleri yükleyip analizi başlatın.</li>
+            <li>Lütfen verileri kutulara yapıştırıp analizi başlatın.</li>
         </ul>
     </section>
 
     <footer><p>© 2026 Insta Insight</p></footer>
 
     <script>
-        let followersList = [];
-        let followingList = [];
         let globalUnfollowers = [];
 
-        // Takipçi dosyası seçildiğinde tetiklenir
-        document.getElementById('followersFile').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                document.getElementById('followersLabel').innerText = file.name;
-                document.getElementById('followersLabel').style.color = '#f3cc4a';
-                
-                const reader = new FileReader();
-                reader.onload = function(evt) {
-                    try {
-                        const data = JSON.parse(evt.target.result);
-                        const raw = Array.isArray(data) ? data : (data.entries || []);
-                        followersList = raw.map(item => {
-                            if (item.string_list_data && item.string_list_data[0]) {
-                                return item.string_list_data[0].value;
-                            }
-                            return typeof item === 'string' ? item : null;
-                        }).filter(Boolean);
-                    } catch(err) {
-                        alert("Takipçi dosyası okunurken hata oluştu, doğru JSON dosyası olduğundan emin olun.");
-                    }
-                };
-                reader.readAsText(file);
-            }
-        });
-
-        // Takip edilen dosyası seçildiğinde tetiklenir
-        document.getElementById('followingFile').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                document.getElementById('followingLabel').innerText = file.name;
-                document.getElementById('followingLabel').style.color = '#f3cc4a';
-                
-                const reader = new FileReader();
-                reader.onload = function(evt) {
-                    try {
-                        const data = JSON.parse(evt.target.result);
-                        const raw = data.relationships_following || data.entries || (Array.isArray(data) ? data : []);
-                        followingList = raw.map(item => {
-                            if (item.string_list_data && item.string_list_data[0]) {
-                                return item.string_list_data[0].value;
-                            }
-                            return typeof item === 'string' ? item : null;
-                        }).filter(Boolean);
-                    } catch(err) {
-                        alert("Takip edilen dosyası okunurken hata oluştu, doğru JSON dosyası olduğundan emin olun.");
-                    }
-                };
-                reader.readAsText(file);
-            }
-        });
-
-        // Analiz butonu mantığı
         document.getElementById('analyzeBtn').addEventListener('click', function() {
-            if (followersList.length === 0 || followingList.length === 0) {
-                alert("Lütfen hem Takipçiler hem de Takip Edilenler dosyasını seçin!");
+            const followersRaw = document.getElementById('followersText').value.trim();
+            const followingRaw = document.getElementById('followingText').value.trim();
+
+            if (!followersRaw || !followingRaw) {
+                alert("Lütfen iki kutuyu da doldurun!");
                 return;
             }
 
-            document.getElementById('followersCount').innerText = followersList.length;
-            document.getElementById('followingCount').innerText = followingList.length;
+            try {
+                let followersList = [];
+                let followingList = [];
 
-            // Çapraz karşılaştırma
-            globalUnfollowers = followingList.filter(user => !followersList.includes(user));
-            document.getElementById('notFollowingCount').innerText = globalUnfollowers.length;
+                // 1. Takipçileri Çöz
+                const followersData = JSON.parse(followersRaw);
+                const rawFollowers = Array.isArray(followersData) ? followersData : (followersData.entries || []);
+                followersList = rawFollowers.map(item => {
+                    if (item.string_list_data && item.string_list_data[0]) return item.string_list_data[0].value;
+                    return typeof item === 'string' ? item : null;
+                }).filter(Boolean);
 
-            renderList(globalUnfollowers);
+                // 2. Takip Edilenleri Çöz
+                const followingData = JSON.parse(followingRaw);
+                const rawFollowing = followingData.relationships_following || followingData.entries || (Array.isArray(followingData) ? followingData : []);
+                followingList = rawFollowing.map(item => {
+                    if (item.string_list_data && item.string_list_data[0]) return item.string_list_data[0].value;
+                    return typeof item === 'string' ? item : null;
+                }).filter(Boolean);
+
+                // 3. İstatistikleri Yazdır
+                document.getElementById('followersCount').innerText = followersList.length;
+                document.getElementById('followingCount').innerText = followingList.length;
+
+                // 4. Çapraz Karşılaştırma
+                globalUnfollowers = followingList.filter(user => !followersList.includes(user));
+                document.getElementById('notFollowingCount').innerText = globalUnfollowers.length;
+
+                renderList(globalUnfollowers);
+
+            } catch (err) {
+                alert("Yapıştırılan metinlerde hata var. Lütfen dosyanın içindeki tüm yazıyı eksiksiz kopyaladığınızdan emin olun.");
+                console.error(err);
+            }
         });
 
         function renderList(list) {
