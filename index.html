@@ -8,6 +8,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
+    <!-- Telefondan yüklenen ZIP dosyalarını açabilmek için gerekli kütüphane -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    
     <style>
         * { box-sizing: border-box; font-family: 'Poppins', sans-serif; }
         body {
@@ -34,14 +37,14 @@
         
         .file-box {
             border: 1px dashed rgba(243, 204, 74, 0.4); border-radius: 15px;
-            padding: 15px; margin-bottom: 15px; background: rgba(243, 204, 74, 0.02);
+            padding: 20px 15px; margin-bottom: 15px; background: rgba(243, 204, 74, 0.02);
             display: flex; align-items: center; justify-content: space-between;
         }
         .file-box label {
-            background: #ffffff; color: #000; padding: 6px 12px; border-radius: 8px;
-            font-size: 12px; font-weight: 600; cursor: pointer;
+            background: #ffffff; color: #000; padding: 8px 16px; border-radius: 8px;
+            font-size: 13px; font-weight: 600; cursor: pointer;
         }
-        .file-box span { font-size: 12px; color: #a0a09e; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .file-box span { font-size: 13px; color: #a0a09e; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: left; }
         
         #analyzeBtn {
             background: linear-gradient(90deg, #f3cc4a 0%, #d4a727 100%); color: #0d0d0c;
@@ -90,23 +93,17 @@
     <div class="background"></div>
     <header>
         <h1>Insta Insight</h1>
-        <p>Canlı Otomatik Veri Analizi</p>
+        <p>Resmi Veri Analiz Paneli</p>
     </header>
 
     <section class="upload-card">
-        <h2>Canlı Listeleri Yükle</h2>
-        <p>Tarayıcıdan indirdiğin güncel listeleri buraya yükle.</p>
+        <h2>Instagram Zip Dosyasını Yükle</h2>
+        <p>Instagram'dan telefonuna indirdiğin resmi veri zip dosyasını doğrudan seç.</p>
         
         <div class="file-box">
-            <span>Takipçiler: <strong id="followersLabel">Seçilmedi</strong></span>
-            <label for="followersFile">Dosya Seç</label>
-            <input type="file" id="followersFile" accept=".json" style="display:none;">
-        </div>
-
-        <div class="file-box">
-            <span>Takip Edilenler: <strong id="followingLabel">Seçilmedi</strong></span>
-            <label for="followingFile">Dosya Seç</label>
-            <input type="file" id="followingFile" accept=".json" style="display:none;">
+            <span>Instagram ZIP Verisi: <br><strong id="zipLabel">Seçilmedi</strong></span>
+            <label for="zipFile">Dosya Seç</label>
+            <input type="file" id="zipFile" accept=".zip" style="display:none;">
         </div>
 
         <button id="analyzeBtn">Otomatik Analiz Et</button>
@@ -137,11 +134,138 @@
             <button id="downloadCsv">CSV İndir</button>
         </div>
         <ul id="userList">
-            <li>Lütfen listeleri yükleyip analizi başlatın.</li>
+            <li>Lütfen Instagram zip dosyasını yükleyip analizi başlatın.</li>
         </ul>
     </section>
 
     <footer><p>© 2026 Insta Insight</p></footer>
-    <script src="script.js"></script>
+
+    <!-- Ayrı bir script.js dosyasıyla uğraşmaman için tüm mantığı buraya entegre ettim -->
+    <script>
+        let globalUnfollowers = [];
+        let selectedZipFile = null;
+
+        // Dosya seçildiğinde ekrandaki etiketi güncelle
+        document.getElementById('zipFile').addEventListener('change', function(e) {
+            if(e.target.files.length > 0) {
+                selectedZipFile = e.target.files[0];
+                document.getElementById('zipLabel').innerText = selectedZipFile.name;
+                document.getElementById('zipLabel').style.color = '#f3cc4a';
+            }
+        });
+
+        // Butona tıklandığında analizi başlat
+        document.getElementById('analyzeBtn').addEventListener('click', async function() {
+            if (!selectedZipFile) {
+                alert("Lütfen önce telefonunuza indirdiğiniz Instagram ZIP dosyasını seçin!");
+                return;
+            }
+
+            const btn = document.getElementById('analyzeBtn');
+            btn.innerText = "Dosya Çözülüyor...";
+            btn.disabled = true;
+
+            try {
+                const zip = await JSZip.loadAsync(selectedZipFile);
+                let followers = [];
+                let following = [];
+
+                // Instagram'ın resmi ZIP yapısındaki olası dosya yollarını kontrol ediyoruz
+                // Farklı Instagram sürümlerine uyum sağlamak için alternatifli yollar eklendi
+                const followersFile = zip.file("connections/followers_and_following/followers.json") || 
+                                      zip.file("followers_and_following/followers.json") ||
+                                      zip.file("followers.json");
+
+                const followingFile = zip.file("connections/followers_and_following/following.json") || 
+                                      zip.file("followers_and_following/following.json") ||
+                                      zip.file("following.json");
+
+                if (!followersFile || !followingFile) {
+                    throw new Error("ZIP dosyası içinde takipçi verileri bulunamadı. Lütfen Instagram'dan doğru veriyi indirdiğinizden emin olun.");
+                }
+
+                // 1. Takipçileri Oku ve Düzenle
+                const followersData = JSON.parse(await followersFile.async("text"));
+                // Resmi yedekteki iç içe veriyi sadece düz kullanıcı adına çeviriyoruz
+                // Instagram verisi dizi veya obje olarak gelebilir, iki ihtimali de yönetiyoruz
+                const rawFollowers = Array.isArray(followersData) ? followersData : (followersData.entries || []);
+                followers = rawFollowers.map(item => {
+                    if(item.string_list_data && item.string_list_data[0]) {
+                        return item.string_list_data[0].value;
+                    }
+                    return null;
+                }).filter(Boolean);
+
+                // 2. Takip Edilenleri Oku ve Düzenle
+                const followingData = JSON.parse(await followingFile.async("text"));
+                const rawFollowing = followingData.relationships_following || followingData.entries || [];
+                following = rawFollowing.map(item => {
+                    if(item.string_list_data && item.string_list_data[0]) {
+                        return item.string_list_data[0].value;
+                    }
+                    return null;
+                }).filter(Boolean);
+
+                // 3. İstatistikleri Kartlara Yazdır
+                document.getElementById('followersCount').innerText = followers.length;
+                document.getElementById('followingCount').innerText = following.length;
+
+                // 4. Çarpraz Karşılaştırma Analizi (Geri Takip Etmeyenler)
+                globalUnfollowers = following.filter(user => !followers.includes(user));
+                document.getElementById('notFollowingCount').innerText = globalUnfollowers.length;
+
+                // 5. Listeyi Arayüze Dök
+                renderList(globalUnfollowers);
+                
+                btn.innerText = "Analiz Tamamlandı!";
+                setTimeout(() => { btn.innerText = "Yeniden Analiz Et"; btn.disabled = false; }, 2000);
+
+            } catch (error) {
+                alert("Hata oluştu: " + error.message);
+                btn.innerText = "Otomatik Analiz Et";
+                btn.disabled = false;
+            }
+        });
+
+        // Listeyi ekrana basan fonksiyon
+        function renderList(list) {
+            const userListUl = document.getElementById('userList');
+            userListUl.innerHTML = "";
+
+            if (list.length === 0) {
+                userListUl.innerHTML = "<li>Tebrikler! Herkes sizi geri takip ediyor. ✨</li>";
+                return;
+            }
+
+            list.forEach(username => {
+                const li = document.createElement('li');
+                li.innerText = "@" + username;
+                userListUl.appendChild(li);
+            });
+        }
+
+        // Arama Kutusu Filtrelemesi
+        document.getElementById('search').addEventListener('input', function(e) {
+            const term = e.target.value.toLowerCase();
+            const filtered = globalUnfollowers.filter(user => user.toLowerCase().includes(term));
+            renderList(filtered);
+        });
+
+        // Sonuçları Excel/CSV olarak indirme motoru
+        document.getElementById('downloadCsv').addEventListener('click', function() {
+            if(globalUnfollowers.length === 0) {
+                alert("İndirilecek veri bulunamadı.");
+                return;
+            }
+            let csvContent = "data:text/csv;charset=utf-8,Kullanici Adi\n" + globalUnfollowers.map(e => "@" + e).join("\n");
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "geri_takip_etmeyenler.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+    </script>
 </body>
 </html>
