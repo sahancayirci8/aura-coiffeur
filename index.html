@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Insta Insight</title>
+
+<link rel="stylesheet" href="styles.css">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="background"></div>
+
+<header>
+
+<h1>Insta Insight</h1>
+
+<p>Instagram Veri Analiz Paneli</p>
+
+</header>
+
+<section class="upload-card">
+
+<h2>Veri Dosyası</h2>
+
+<p>Instagram hesabından dışa aktardığın ZIP dosyasını yükle.</p>
+
+<input type="file" id="zipInput" accept=".zip">
+
+<button id="analyzeBtn">
+
+Analizi Başlat
+
+</button>
+
+</section>
+
+<section class="dashboard">
+
+<div class="card">
+
+<span>👥</span>
+
+<h3>Takipçi</h3>
+
+<h1 id="followers">
+
+0
+
+</h1>
+
+</div>
+
+<div class="card">
+
+<span>➕</span>
+
+<h3>Takip Edilen</h3>
+
+<h1 id="following">
+
+0
+
+</h1>
+
+</div>
+
+<div class="card">
+
+<span>❌</span>
+
+<h3>Geri Takip Etmeyen</h3>
+
+<h1 id="notFollowingBack">
+
+0
+
+</h1>
+
+</div>
+
+<div class="card">
+
+<span>✅</span>
+
+<h3>Seni Takip Etmeyen</h3>
+
+<h1 id="youDontFollow">
+
+0
+
+</h1>
+
+</div>
+
+</section>
+
+<section class="search-box">
+
+<input
+
+type="text"
+
+id="search"
+
+placeholder="Kullanıcı ara...">
+
+</section>
+
+<section class="result">
+
+<div class="result-header">
+
+<h2>Analiz Sonuçları</h2>
+
+<button id="downloadCsv">
+
+CSV İndir
+
+</button>
+
+</div>
+
+<ul id="userList">
+
+<li>
+
+Henüz analiz yapılmadı.
+
+</li>
+
+</ul>
+
+</section>
+
+<footer>
+
+<p>
+
+© 2026 Insta Insight
+
+</p>
+
+</footer>
+
+<script src="script.js"></script>
+
+</body>
+
+</html>
